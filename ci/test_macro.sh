@@ -12,7 +12,7 @@ fi
 cargo build --verbose --all
 cargo test --verbose --all
 
-cd test
+cd test_macro
 
 yarn install
 yarn run build:debug
