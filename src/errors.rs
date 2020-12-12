@@ -91,8 +91,14 @@ impl From<Error> for neon::result::Throw {
         if let ErrorKind::Js(_) = *err.kind() {
             return neon::result::Throw;
         };
-        let msg = format!("{:?}", err);
+        let mut msg = format!("{:?}", err);
+        // throw_error_from_utf8 only accept i32 and len only return usize
+        while msg.len() > i32::MAX as usize {
+            msg.pop();
+        }
         unsafe {
+            #[allow(clippy::cast_possible_wrap)]
+            #[allow(clippy::cast_possible_truncation)]
             neon_runtime::error::throw_error_from_utf8(
                 neon_runtime::call::current_isolate(),
                 msg.as_ptr(),
