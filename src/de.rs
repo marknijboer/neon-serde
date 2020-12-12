@@ -66,7 +66,9 @@ impl<'x, 'd, 'a, 'j, C: Context<'j>> serde::de::Deserializer<'x> for &'d mut Des
         } else if let Ok(val) = self.input.downcast::<JsNumber>() {
             let v = val.value();
             if v.trunc() == v {
-                visitor.visit_i64(v as i64)
+                // We just trunc it then it is handled
+                #[allow(clippy::cast_possible_truncation)]
+                visitor.visit_i64(v.trunc() as i64)
             } else {
                 visitor.visit_f64(v)
             }
