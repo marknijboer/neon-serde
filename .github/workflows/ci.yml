@@ -13,7 +13,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -32,9 +32,4 @@ jobs:
         toolchain: ${{ matrix.rust-toolchain }}
         override: true
         components: rustfmt, clippy
-    - run: cargo build --verbose --all
-    - run: cargo test --verbose --all
-    - run: cd test
-    - run: yarn install
-    - run: yarn run build:debug
-    - run: yarn test
+    - run: ci/test.sh
