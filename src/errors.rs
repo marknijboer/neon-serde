@@ -85,7 +85,7 @@ impl de::Error for Error {
     }
 }
 
-#[allow(use_debug)]
+#[allow(clippy::use_debug)]
 impl From<Error> for neon::result::Throw {
     fn from(err: Error) -> Self {
         if let ErrorKind::Js(_) = *err.kind() {
