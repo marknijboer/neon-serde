@@ -377,7 +377,7 @@ impl<'x, 'a, 'j, C: Context<'j>> VariantAccess<'x> for JsVariantAccess<'a, 'j, C
                     ))
                 }
             },
-            _ => Err(serde::de::Error::invalid_type(
+            None => Err(serde::de::Error::invalid_type(
                 Unexpected::UnitVariant,
                 &"struct variant",
             )),
