@@ -6,9 +6,7 @@
 #![allow(stutter)]
 #![recursion_limit = "128"]
 
-//!
-//! Neon-serde
-//! ==========
+//! # Neon-serde
 //!
 //! This crate is a utility to easily convert values between
 //!
