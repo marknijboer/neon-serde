@@ -110,18 +110,19 @@ impl<'x, 'd, 'a, 'j, C: Context<'j>> serde::de::Deserializer<'x> for &'d mut Des
         } else if let Ok(val) = self.input.downcast::<JsObject>() {
             let prop_names = val.get_own_property_names(self.cx)?;
             let len = prop_names.len();
-            if len != 1 {
+            if len == 1 {
+                let key = prop_names.get(self.cx, 0)?.downcast::<JsString>().or_throw(self.cx)?;
+                let enum_value = val.get(self.cx, key)?;
+                visitor.visit_enum(JsEnumAccess::new(self.cx, key.value(), Some(enum_value)))
+            } else {
                 Err(ErrorKind::InvalidKeyType(format!(
                     "object key with {} properties",
                     len
-                )))?
+                )).into())
             }
-            let key = prop_names.get(self.cx, 0)?.downcast::<JsString>().or_throw(self.cx)?;
-            let enum_value = val.get(self.cx, key)?;
-            visitor.visit_enum(JsEnumAccess::new(self.cx, key.value(), Some(enum_value)))
         } else {
             let m = self.input.to_string(self.cx)?.value();
-            Err(ErrorKind::InvalidKeyType(m))?
+            Err(ErrorKind::InvalidKeyType(m).into())
         }
     }
 
@@ -245,7 +246,7 @@ impl<'x, 'a, 'j, C: Context<'j>> MapAccess<'x> for JsObjectAccess<'a, 'j, C> {
         V: DeserializeSeed<'x>,
     {
         if self.idx >= self.len {
-            return Err(ErrorKind::ArrayIndexOutOfBounds(self.len, self.idx))?;
+            return Err(ErrorKind::ArrayIndexOutOfBounds(self.len, self.idx).into());
         }
         let prop_name = self.prop_names.get(self.cx, self.idx)?;
         let value = self.input.get(self.cx, prop_name)?;
